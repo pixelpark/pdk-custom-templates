@@ -1,2 +1,6 @@
 # Setting ownership to the tooling team
 * @puppetlabs/tooling
+
+# pixelpark ownerships
+/moduleroot/.gitlab-ci.yml.erb @pixelpark/puppet
+/config_defaults.yml @pixelpark/puppet

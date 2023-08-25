@@ -1,0 +1,78 @@
+<% if @configs['override'] && @configs.has_key?('custom') -%>
+<%   configs = @configs['custom'].dup -%>
+<% elsif @configs['defaults'] && !@configs.has_key?('custom') -%>
+<%   configs = @configs['defaults'].dup -%>
+<% else -%>
+<%   require 'deep_merge/core' -%>
+<%   configs = {} -%>
+<%   configs.deep_merge!(@configs['defaults']) -%>
+<%   configs.deep_merge!(@configs['custom']) -%>
+<% end -%>
+---
+stages:
+<% unless @configs['override'] -%>
+  - validation
+  - unit
+<% end -%>
+
+.parallel_matrix:
+  parallel:
+    matrix:
+<% if configs['ruby_versions'] -%>
+<%   configs['ruby_versions'].each do |ruby_version, options| -%>
+      - PUPPET_GEM_VERSION: ['<%= options['puppet_version'] %>']
+        RUBY_VERSION: ['<%= ruby_version %>']
+<%   end -%>
+<% end -%>
+  image: <%= configs['image'] %>:${RUBY_VERSION}
+<% if configs['cache'] -%>
+  cache:
+    key: "${CI_JOB_IMAGE}-Puppet ${PUPPET_GEM_VERSION}"
+    paths:
+<%   configs['cache']['paths'].each do |path| -%>
+      - <%= path %>
+<%   end -%>
+<% end -%>
+  before_script:
+    - rm -f Gemfile.lock || true
+    - ruby --version
+    - gem --version
+    - bundle -v
+<% if configs['rubygems_mirror'] -%>
+    - gem sources -a <%= configs['rubygems_mirror'] %> --remove https://rubygems.org/
+    - bundle config mirror.http://rubygems.org/ <%= configs['rubygems_mirror'] %>
+    - bundle config mirror.https://rubygems.org/ <%= configs['rubygems_mirror'] %>
+<% end -%>
+    - bundle config set --local path 'vendor/bundle'
+    - bundle config set --local without 'system_tests'
+    - bundle config set --local jobs $(nproc)
+    - bundle install
+    - bundle clean
+    - bundle env
+<% if configs['tags'] -%>
+  tags:
+<%   configs['tags'].each do |tag| -%>
+    - <%= tag %>
+<%   end -%>
+<% end -%>
+<% if configs['rules'] -%>
+  rules:
+<%   configs['rules'].each do |rule| -%>
+    - <%= rule %>
+<%   end -%>
+<% end -%>
+
+'Puppet / validation':
+  extends: .parallel_matrix
+  stage: validation
+  script:
+    - bundle exec rake validate lint check rubocop
+
+'Puppet / unit':
+  extends: .parallel_matrix
+  stage: unit
+  script:
+    - bundle exec rake parallel_spec
+<% if configs['custom_jobs'] -%>
+<%=  YAML.dump(configs['custom_jobs']).sub(%r{\A---\r?\n}m, '') %>
+<% end -%>
