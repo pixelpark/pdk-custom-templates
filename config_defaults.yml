@@ -590,7 +590,12 @@ spec/spec_helper.rb:
       paths:
         - 'vendor/bundle'
     rules:
-      - 'if: $CI_COMMIT_TAG == null'
+      # run branch pipeline for project default branch
+      - 'if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      # run merge request pipeline
+      - 'if: $CI_PIPELINE_SOURCE == "merge_request_event"'
+      # run every other protected branches
+      - 'if: $CI_COMMIT_TAG == null && $CI_COMMIT_REF_PROTECTED == "true"'
 .devcontainer/Dockerfile:
   delete: true
 .devcontainer/README.md:

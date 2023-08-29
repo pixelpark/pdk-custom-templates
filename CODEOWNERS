@@ -4,3 +4,5 @@
 # pixelpark ownerships
 /moduleroot/.gitlab-ci.yml.erb @pixelpark/puppet
 /config_defaults.yml @pixelpark/puppet
+/README.md @pixelpark/puppet
+/CHANGELOG.md @pixelpark/puppet
