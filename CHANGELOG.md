@@ -1,6 +1,13 @@
+<!-- markdownlint-disable MD024 -->
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## 2024-04-02
+
+### Changes
+
+* Merge upstream 3.0.1
 
 ## 2023-08-29
 
