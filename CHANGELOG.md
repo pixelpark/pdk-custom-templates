@@ -3,6 +3,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2024-09-28
+
+### Changes
+
+* Merge upstream 3.3.0.1
+
 ## 2024-04-02
 
 ### Changes

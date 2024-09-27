@@ -31,6 +31,7 @@ common:
     - '/spec/fixtures/modules/*'
     - '/tmp/'
     - '/vendor/'
+    - '/.vendor/'
     - '/convert_report.txt'
     - '/update_report.txt'
     - '.DS_Store'
@@ -38,6 +39,12 @@ common:
     - '.envrc'
     - '/inventory.yaml'
     - '/spec/fixtures/litmus_inventory.yaml'
+    - '.resource_types'
+    - '.modules'
+    - '.task_cache.json'
+    - '.plan_cache.json'
+    - '.rerun.json'
+    - 'bolt-debug.log'
     - '*.bak'
     - '.rbenv*'
     - '.rvmrc*'
@@ -514,14 +521,16 @@ Gemfile:
       - gem: racc
         version: '~> 1.4.0'
         condition: "Gem::Requirement.create(['>= 2.7.0', '< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))"
+      - gem: deep_merge
+        version: '~> 1.2.2'
       - gem: 'voxpupuli-puppet-lint-plugins'
         version: '~> 5.0'
       - gem: 'facterdb'
-        version: '~> 1.18'
+        version: '~> 2.1'
       - gem: 'metadata-json-lint'
         version: '~> 4.0'
       - gem: 'rspec-puppet-facts'
-        version: '~> 2.0'
+        version: '~> 4.0'
       - gem: 'dependency_checker'
         version: '~> 1.0.0'
       - gem: 'parallel_tests'
@@ -544,20 +553,27 @@ Gemfile:
           - mswin
           - mingw
           - x64_mingw
+      # Temporary Pin
+      - gem: 'rexml'
+        version: 
+          - '>= 3.0.0'
+          - '< 3.2.7'
     ':development, :release_prep':
       - gem: 'puppet-strings'
         version: '~> 4.0'
       - gem: 'puppetlabs_spec_helper'
-        version: '~> 6.0'
+        version: '~> 8.0'
+      - gem: 'puppet-blacksmith'
+        version: '~> 7.0'
     ':system_tests':
       - gem: 'puppet_litmus'
-        version: 
+        version:
         - '~> 1.0'
-        platforms: 
+        platforms:
           - ruby
           - x64_mingw
       - gem: 'CFPropertyList'
-        version: 
+        version:
         - '< 3.0.7'
         platforms:
           - mswin
