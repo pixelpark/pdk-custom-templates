@@ -70,11 +70,28 @@ common:
     - '/.devcontainer/'
 .yardopts:
   markup: markdown
+# Ensure that any changes to lint here are reflected within the rake_tasks.rb file inside the puppetlabs_spec_helper:
+# - https://github.com/puppetlabs/puppetlabs_spec_helper/blob/main/lib/puppetlabs_spec_helper/rake_tasks.rb#L124
 Rakefile:
   linter_fail_on_warnings: true
   changelog_version_tag_pattern: 'v%s'
+  linter_fail_on_warnings: true
   default_disabled_lint_checks:
     - 'relative'
+    - '80chars'
+    - '140chars'
+    - 'class_inherits_from_params_class'
+    - 'autoloader_layout'
+    - 'documentation'
+    - 'single_quote_string_with_variables'
+  linter_exclusions:
+    - '.vendor/**/*.pp'
+    - '.bundle/**/*.pp'
+    - 'pkg/**/*.pp'
+    - 'spec/**/*.pp'
+    - 'tests/**/*.pp'
+    - 'types/**/*.pp'
+    - 'vendor/**/*.pp'
   extras: []
 .rubocop.yml:
   selected_profile: strict
@@ -527,10 +544,20 @@ Gemfile:
         version: '~> 5.0'
       - gem: 'facterdb'
         version: '~> 2.1'
+        condition: "Gem::Requirement.create(['< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))"
+      - gem: 'facterdb'
+        version: '~> 3.0'
+        condition: "Gem::Requirement.create(['>= 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))"
       - gem: 'metadata-json-lint'
         version: '~> 4.0'
+      - gem: 'json-schema'
+        version: '< 5.1.1'
       - gem: 'rspec-puppet-facts'
         version: '~> 4.0'
+        condition: "Gem::Requirement.create(['< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))"
+      - gem: 'rspec-puppet-facts'
+        version: '~> 5.0'
+        condition: "Gem::Requirement.create(['>= 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))"
       - gem: 'dependency_checker'
         version: '~> 1.0.0'
       - gem: 'parallel_tests'
@@ -553,11 +580,6 @@ Gemfile:
           - mswin
           - mingw
           - x64_mingw
-      # Temporary Pin
-      - gem: 'rexml'
-        version: 
-          - '>= 3.0.0'
-          - '< 3.2.7'
     ':development, :release_prep':
       - gem: 'puppet-strings'
         version: '~> 4.0'
